@@ -185,3 +185,5 @@ const gameController = (() => {
   console.log(`${currentPlayer.name}'s turn.`);
   return { changeFirstPlayer, resetGame, takeTurn };
 })();
+
+const displayController = (() => {})();

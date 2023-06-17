@@ -1,0 +1,98 @@
+/* Contents:
+    1. Global properties
+    2. Page layout
+    3. Header
+    4. Main section
+    5. Footer */
+
+/* *********************************
+1. Global properties
+********************************* */
+
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --background-colour-main: #f1f1f1;
+    --background-colour-secondary: #bbbbbb;
+    --highlight-colour-main: #333;
+    --highlight-colour-secondary: #777;
+    --text-colour-dark: #030303;
+    --text-colour-light: #fdfdfd;
+}
+
+/* *********************************
+2. Page layout
+********************************* */
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+}
+
+/* *********************************
+3. Header
+********************************* */
+
+
+/* *********************************
+4. Main section
+********************************* */
+
+.scoreboard {
+    display: flex;
+}
+
+.scoreboard-player {
+    display: flex;
+}
+
+.scoreboard-player-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.scoreboard-swap-players {
+    display: flex;
+    flex-direction: column;
+}
+
+/*
+Order of items:
+.scoreboard-player-1 {
+    order: 0;
+}
+
+.scoreboard-swap-players {
+    order: 1;
+}
+
+.scoreboard-player-2 {
+    order: 2;
+}
+*/
+
+.gameboard {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    gap: 2px;
+    width: 300px;
+    height: 300px;
+    background-color: #000;
+}
+
+.gameboard-cell {
+    border: none;
+}
+
+/* *********************************
+5. Footer
+********************************* */
+
+footer {
+    margin-top: auto;
+}
