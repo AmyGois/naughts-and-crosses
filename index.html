@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,400;0,700;1,100;1,200;1,400;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./styles.css">
     <script src="./script.js"></script>
     <title>Naughts and Crosses</title>
@@ -10,53 +13,59 @@
 <body>
     <header>
         <h1>Naughts and Crosses</h1>
-    </header>
-    
-    <main>
+
         <div class="scoreboard">
             <div class="scoreboard-player">
                 <div class="scoreboard-player-name">
                     <span class="player-name">Player X</span>
-                    <button class="player-choose-name"></button> <!-- Down pointing symbol here -->
+                    <button class="player-choose-name">
+                        <img src="./icons/dropdown.svg" alt="choose name">
+                    </button>
                 </div>
                 <div class="scoreboard-player-info">
                     <span class="player-mark">X</span>
-                    <span class="player-score">0</span>
+                    <span class="player-score">3</span>
                 </div>
             </div>
-
-            <div class="scoreboard-player">
-                <div class="scoreboard-player-name">
-                    <span class="player-name">Player Y</span>
-                    <button class="player-choose-name"></button> <!-- Down pointing symbol here -->
+    
+            <div class="scoreboard-player order-2">
+                <div class="scoreboard-player-name order-2">
+                    <span class="player-name">Player O</span>
+                    <button class="player-choose-name">
+                        <img src="./icons/dropdown.svg" alt="choose name">
+                    </button>
                 </div>
                 <div class="scoreboard-player-info">
-                    <span class="player-mark">Y</span>
-                    <span class="player-score">0</span>
+                    <span class="player-mark">O</span>
+                    <span class="player-score">2</span>
                 </div>
             </div>
-
-            <div class="scoreboard-swap-players">
-                <button>swap</button> <!-- <=> symbol here -->
-                <button>Clear Score</button>
+    
+            <div class="scoreboard-buttons">
+                <button class="button-swap-players">
+                    <img src="./icons/swap.svg" alt="swap first player">
+                </button> <!-- <=> symbol here -->
+                <button class="button-clear-score">Clear Score</button>
             </div>
         </div>
-
-        <div class="victory-status">
+    </header>
+    
+    <main>
+        <div class="victory-status hidden">
             <p class="victory-status-message">It's a tie!</p>
-            <button>Play Again</button>
+            <button class="button-play-again">Play Again</button>
         </div>
 
         <div class="gameboard">
+            <button class="gameboard-cell top-left"></button>
+            <button class="gameboard-cell"></button>
+            <button class="gameboard-cell top-right"></button>
             <button class="gameboard-cell"></button>
             <button class="gameboard-cell"></button>
             <button class="gameboard-cell"></button>
+            <button class="gameboard-cell bottom-left"></button>
             <button class="gameboard-cell"></button>
-            <button class="gameboard-cell"></button>
-            <button class="gameboard-cell"></button>
-            <button class="gameboard-cell"></button>
-            <button class="gameboard-cell"></button>
-            <button class="gameboard-cell"></button>
+            <button class="gameboard-cell bottom-right"></button>
         </div>
     </main>
 

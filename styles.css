@@ -1,12 +1,17 @@
 /* Contents:
-    1. Global properties
-    2. Page layout
+    1. Page layout, main colours & typography
+    2. Buttons
+        2.1. "Clear score" & "Play again" buttons
+        2.2. Dropdown buttons and swap first player button (icons)
     3. Header
+        3.1. Scoreboard
     4. Main section
+        4.1. Victory or tie message
+        4.2. Gameboard
     5. Footer */
 
 /* *********************************
-1. Global properties
+1. Page layout, main colours & typography
 ********************************* */
 
 * {
@@ -14,66 +19,165 @@
 }
 
 :root {
-    --background-colour-main: #f1f1f1;
-    --background-colour-secondary: #bbbbbb;
-    --highlight-colour-main: #333;
-    --highlight-colour-secondary: #777;
+    font-family: 'Poppins', sans-serif;
+    --background-colour-main: #eeeee4;
+    --background-colour-secondary: #fff;
+    --highlight-colour-main: #680085;
+    --highlight-colour-secondary: #00a2c2;
+    --highlight-hover-secondary: #00829c;
     --text-colour-dark: #030303;
     --text-colour-light: #fdfdfd;
 }
 
-/* *********************************
-2. Page layout
-********************************* */
-
-body {
+body, header, main, .victory-status {
     display: flex;
     flex-direction: column;
+}
+
+header, main, .victory-status {
+    align-items: center;
+}
+
+body {
     min-height: 100vh;
     margin: 0;
+    background-color: var(--background-colour-main);
+}
+
+header, footer {
+    background-color: var(--highlight-colour-main);
+    color: var(--text-colour-light);
+}
+
+/* *********************************
+2. Buttons
+********************************* */
+
+button {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* 2.1. "Clear score" & "Play again" buttons */
+
+.button-clear-score, .button-play-again {
+    background-color: var(--highlight-colour-secondary);
+    color: #fff;
+    border: none;
+    padding: 0.3rem 0.6rem;
+    border-radius: 8px;
+}
+
+.button-clear-score:hover, .button-play-again:hover {
+    background-color: var(--highlight-hover-secondary);
+}
+
+.button-play-again {
+    font-size: 1rem;
+}
+
+/* 2.2. Dropdown buttons and swap first player button (icons) */
+
+.player-choose-name, .button-swap-players {
+    padding: 0;
+    border: none;
+    background: none;
+}
+
+.player-choose-name:hover, .button-swap-players:hover {
+    background-color: var(--background-colour-main);
+    border-radius: 8px;
+}
+
+.player-choose-name img {
+    width: 24px;
+    height: 24px;
+}
+
+.button-swap-players img {
+    width: 64px;
+    height: 32px;
 }
 
 /* *********************************
 3. Header
 ********************************* */
 
+header {
+    padding-bottom: 16px;
+}
 
-/* *********************************
-4. Main section
-********************************* */
+h1 {
+    font-size: 2.2rem;
+}
+
+/* 3.1. Scoreboard */
 
 .scoreboard {
     display: flex;
+    gap: 16px;
+    background-color: var(--background-colour-secondary);
+    color: var(--text-colour-dark);
+    border-radius: 16px;
+    padding: 8px 16px;
+    font-size: 1.2rem;
 }
 
 .scoreboard-player {
     display: flex;
+    gap: 8px;
+}
+
+.scoreboard-player-name {
+    padding-top: 2px;
 }
 
 .scoreboard-player-info {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    gap: 8px;
 }
 
-.scoreboard-swap-players {
+.player-mark {
+    font-weight: 700;
+}
+
+.player-mark, .player-score {
+    font-size: 1.5rem;
+}
+
+.scoreboard-buttons {
     display: flex;
     flex-direction: column;
-}
-
-/*
-Order of items:
-.scoreboard-player-1 {
-    order: 0;
-}
-
-.scoreboard-swap-players {
+    justify-content: space-around;
     order: 1;
 }
 
-.scoreboard-player-2 {
+.order-2 {
     order: 2;
 }
-*/
+
+/* *********************************
+4. Main section
+********************************* */
+
+main {
+    padding: 8px;
+    gap: 16px;
+}
+
+/* 4.1. Victory or tie message */
+
+.hidden {
+    visibility: hidden;
+}
+
+.victory-status-message {
+    margin: 8px;
+    font-size: 1.2rem;
+}
+
+/* 4.2. Gameboard */
 
 .gameboard {
     display: grid;
@@ -83,10 +187,33 @@ Order of items:
     width: 300px;
     height: 300px;
     background-color: #000;
+    border: 1px solid #000;
+    border-radius: 16px;
 }
 
 .gameboard-cell {
     border: none;
+    background-color: var(--background-colour-secondary);
+}
+
+.gameboard-cell:hover {
+    background-color: var(--background-colour-main);
+}
+
+.top-left {
+    border-top-left-radius: 16px;
+}
+
+.top-right {
+    border-top-right-radius: 16px;
+}
+
+.bottom-left {
+    border-bottom-left-radius: 16px;
+}
+
+.bottom-right {
+    border-bottom-right-radius: 16px;
 }
 
 /* *********************************
@@ -95,4 +222,5 @@ Order of items:
 
 footer {
     margin-top: auto;
+    text-align: center;
 }
