@@ -18,10 +18,27 @@
             <div class="scoreboard-player">
                 <div class="scoreboard-player-name">
                     <span class="player-name">Player X</span>
-                    <button class="player-choose-name">
+                    <button class="button-choose-name">
                         <img src="./icons/dropdown.svg" alt="choose name">
                     </button>
+
+                    <form action="#" class="choose-player-type">
+                        <input type="radio" name="player-type-x" id="player-human-x" value="human" checked>
+                        <label for="player-human-x">Human</label>
+                        <div>
+                            <label for="choose-name-x">Pick a name:</label>
+                            <div class="choose-name-input">
+                                <input type="text" name="choose-name-x" id="choose-name-x">
+                                <button class="button-submit-name">
+                                    <img src="./icons/check.svg" alt="submit name">
+                                </button>
+                            </div>
+                        </div>
+                        <input type="radio" name="player-type-x" id="player-bot-x" value="bot">
+                        <label for="player-bot-x">CrossBot</label>
+                    </form>
                 </div>
+
                 <div class="scoreboard-player-info">
                     <span class="player-mark">X</span>
                     <span class="player-score">3</span>
@@ -31,10 +48,27 @@
             <div class="scoreboard-player order-2">
                 <div class="scoreboard-player-name order-2">
                     <span class="player-name">Player O</span>
-                    <button class="player-choose-name">
+                    <button class="button-choose-name">
                         <img src="./icons/dropdown.svg" alt="choose name">
                     </button>
+
+                    <form action="#" class="choose-player-type">
+                        <input type="radio" name="player-type-o" id="player-human-o" value="human" checked>
+                        <label for="player-human-o">Human</label>
+                        <div>
+                            <label for="choose-name-o">Pick a name:</label>
+                            <div class="choose-name-input">
+                                <input type="text" name="choose-name-o" id="choose-name-o">
+                                <button class="button-submit-name">
+                                    <img src="./icons/check.svg" alt="submit name">
+                                </button>
+                            </div>
+                        </div>
+                        <input type="radio" name="player-type-o" id="player-bot-o" value="bot">
+                        <label for="player-bot-o">CrossBot</label>
+                    </form>
                 </div>
+
                 <div class="scoreboard-player-info">
                     <span class="player-mark">O</span>
                     <span class="player-score">2</span>
@@ -44,7 +78,8 @@
             <div class="scoreboard-buttons">
                 <button class="button-swap-players">
                     <img src="./icons/swap.svg" alt="swap first player">
-                </button> <!-- <=> symbol here -->
+                    <span class="swap-players-tooltip">Swap who plays first</span>
+                </button>
                 <button class="button-clear-score">Clear Score</button>
             </div>
         </div>

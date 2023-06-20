@@ -5,6 +5,7 @@
         2.2. Dropdown buttons and swap first player button (icons)
     3. Header
         3.1. Scoreboard
+        3.2. Options to change the player's name or choose a bot
     4. Main section
         4.1. Victory or tie message
         4.2. Gameboard
@@ -25,6 +26,7 @@
     --highlight-colour-main: #680085;
     --highlight-colour-secondary: #00a2c2;
     --highlight-hover-secondary: #00829c;
+    --highlight-colour-third: #3a0085;
     --text-colour-dark: #030303;
     --text-colour-light: #fdfdfd;
 }
@@ -42,6 +44,7 @@ body {
     min-height: 100vh;
     margin: 0;
     background-color: var(--background-colour-main);
+    color: var(--text-colour-dark);
 }
 
 header, footer {
@@ -49,13 +52,18 @@ header, footer {
     color: var(--text-colour-light);
 }
 
+/* footer {
+    background-color: var(--highlight-colour-third);
+    color: var(--text-colour-light);
+} */
+
+button, input {
+    font-family: 'Poppins', sans-serif;
+}
+
 /* *********************************
 2. Buttons
 ********************************* */
-
-button {
-    font-family: 'Poppins', sans-serif;
-}
 
 /* 2.1. "Clear score" & "Play again" buttons */
 
@@ -75,27 +83,72 @@ button {
     font-size: 1rem;
 }
 
-/* 2.2. Dropdown buttons and swap first player button (icons) */
+/* 2.2. Dropdown buttons, swap first player button, submit name buttons (icons) */
 
-.player-choose-name, .button-swap-players {
+.button-choose-name, .button-swap-players, .button-submit-name {
     padding: 0;
     border: none;
     background: none;
 }
 
-.player-choose-name:hover, .button-swap-players:hover {
+.button-choose-name:hover, .button-swap-players:hover, .button-submit-name:hover {
     background-color: var(--background-colour-main);
     border-radius: 8px;
 }
 
-.player-choose-name img {
+.button-choose-name img {
     width: 24px;
     height: 24px;
+}
+
+.button-submit-name {
+    height: 24px;
+}
+
+.button-submit-name:hover {
+    background-color: var(--background-colour-secondary);
+}
+
+.button-submit-name img {
+    width: 24px;
+    height: 24px;
+}
+
+.button-swap-players {
+    position: relative;
+    height: 32px;
 }
 
 .button-swap-players img {
     width: 64px;
     height: 32px;
+}
+
+.swap-players-tooltip {
+    padding: 4px;
+    border-radius: 4px;
+    background-color: var(--background-colour-main);
+    width: 150px;
+    position: absolute;
+    top: -100%;
+    left: -25%;
+    z-index: 1;
+    visibility: hidden;
+}
+
+.swap-players-tooltip::after {
+    content: " ";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -6px;
+    border-width: 6px;
+    border-style: solid;
+    border-color: var(--background-colour-main) transparent transparent transparent;
+}
+
+.button-swap-players:hover .swap-players-tooltip {
+    visibility: visible;
 }
 
 /* *********************************
@@ -118,17 +171,13 @@ h1 {
     background-color: var(--background-colour-secondary);
     color: var(--text-colour-dark);
     border-radius: 16px;
-    padding: 8px 16px;
+    padding: 8px 16px 16px 16px;
     font-size: 1.2rem;
 }
 
 .scoreboard-player {
     display: flex;
     gap: 8px;
-}
-
-.scoreboard-player-name {
-    padding-top: 2px;
 }
 
 .scoreboard-player-info {
@@ -155,6 +204,56 @@ h1 {
 
 .order-2 {
     order: 2;
+}
+
+/* 3.2. Options to change the player's name or choose a bot */
+
+.scoreboard-player-name {
+    position: relative;
+}
+
+.choose-player-type {
+    position: absolute;
+    z-index: 1;
+    right: 0px;
+    font-size: 1rem;
+    background-color: var(--background-colour-main);
+    border: 3px solid var(--highlight-colour-secondary);
+    border-radius: 8px;
+    padding: 8px;
+    visibility: hidden;
+}
+
+.choose-player-type::after {
+    content: " ";
+    position: absolute;
+    bottom: 100%;
+    right: 1%;
+    margin-left: -8px;
+    border-width: 8px;
+    border-style: solid;
+    border-color: transparent transparent var(--highlight-colour-secondary) transparent;
+}
+
+.button-choose-name ~ .visible {
+    visibility: visible;
+}
+
+.choose-player-type > div {
+    margin-left: 25px;
+}
+
+.choose-name-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.choose-name-input input {
+    padding: 4px;
+    border-radius: 4px;
+    border: none;
+    width: 100px;
 }
 
 /* *********************************
