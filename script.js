@@ -153,23 +153,20 @@ const gameController = (() => {
     currentPlayer = firstPlayer;
   };
 
-  const endOrContinueGame = () => {
-    const victory = gameboard.checkVictoryStatus(currentPlayer.mark);
+  const endOrContinueGame = (mark) => {
+    const victory = gameboard.checkVictoryStatus(mark);
     if (victory === true) {
-      console.log(`${currentPlayer.name} wins!`);
+      console.log(`${mark} wins!`);
       currentPlayer.score += 1;
-      const results = [currentPlayer.score, 1];
       resetGame();
-      return results; // 1 = win
+      return 'win';
     }
     if (victory === 'tie') {
       console.log(`It's a tie!`);
       resetGame();
-      return 2; // 2 = tie
+      return 'tie';
     }
-    changeCurrentPlayer();
-    console.log(`${currentPlayer.name}'s turn.`);
-    return 3; // 3 = game continues
+    return 'continue';
   };
 
   const takeTurn = (row, column) => {
@@ -178,12 +175,89 @@ const gameController = (() => {
       console.log('Try again!');
       return false; // false = there already is a mark in this cell
     }
-    const endOrContinue = endOrContinueGame();
-    return endOrContinue;
+    const chosenMark = currentPlayer.mark;
+    changeCurrentPlayer();
+    console.log(`${currentPlayer.name}'s turn.`);
+    return chosenMark;
   };
 
   console.log(`${currentPlayer.name}'s turn.`);
-  return { changeFirstPlayer, resetGame, takeTurn };
+  return { changeFirstPlayer, resetGame, endOrContinueGame, takeTurn };
 })();
 
-const displayController = (() => {})();
+/* Module to control UI display */
+const displayController = (() => {
+  const cells = document.querySelectorAll('.gameboard-cell');
+  const cellsArray = Array.from(cells);
+  cellsArray.forEach((cell) => {
+    if (cellsArray.indexOf(cell) < 3) {
+      cell.dataset.row = 0;
+    }
+    if (cellsArray.indexOf(cell) >= 3 && cellsArray.indexOf(cell) < 6) {
+      cell.dataset.row = 1;
+    }
+    if (cellsArray.indexOf(cell) >= 6 && cellsArray.indexOf(cell) < 9) {
+      cell.dataset.row = 2;
+    }
+
+    if (
+      cellsArray.indexOf(cell) === 0 ||
+      cellsArray.indexOf(cell) === 3 ||
+      cellsArray.indexOf(cell) === 6
+    ) {
+      cell.dataset.column = 0;
+    }
+    if (
+      cellsArray.indexOf(cell) === 1 ||
+      cellsArray.indexOf(cell) === 4 ||
+      cellsArray.indexOf(cell) === 7
+    ) {
+      cell.dataset.column = 1;
+    }
+    if (
+      cellsArray.indexOf(cell) === 2 ||
+      cellsArray.indexOf(cell) === 5 ||
+      cellsArray.indexOf(cell) === 8
+    ) {
+      cell.dataset.column = 2;
+    }
+
+    cell.classList.add('cell-x');
+
+    const removeClass = () => {
+      if (cell.classList.contains('cell-x')) {
+        cell.classList.remove('cell-x');
+      }
+      if (cell.classList.contains('cell-o')) {
+        cell.classList.remove('cell-o');
+      }
+    };
+
+    const completeTurn = () => {
+      const result = gameController.takeTurn(
+        cell.dataset.row,
+        cell.dataset.column
+      );
+      if (result === 'X') {
+        cell.textContent = 'X';
+      }
+      if (result === 'O') {
+        cell.textContent = 'O';
+      }
+      removeClass();
+      togglePlayerMark();
+    };
+
+    cell.addEventListener('click', completeTurn);
+  });
+
+  const togglePlayerMark = () => {
+    cellsArray.forEach((cell) => {
+      if (cell.classList.contains('cell-x')) {
+        cell.classList.replace('cell-x', 'cell-o');
+      } else if (cell.classList.contains('cell-o')) {
+        cell.classList.replace('cell-o', 'cell-x');
+      }
+    });
+  };
+})();

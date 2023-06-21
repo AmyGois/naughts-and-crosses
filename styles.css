@@ -293,10 +293,23 @@ main {
 .gameboard-cell {
     border: none;
     background-color: var(--background-colour-secondary);
+    color: var(--text-colour-dark);
+    font-size: 4rem;
+    font-weight: 700;
 }
 
 .gameboard-cell:hover {
     background-color: var(--background-colour-main);
+}
+
+.cell-x:hover::after {
+    content: 'X';
+    color: var(--highlight-colour-secondary);
+}
+
+.cell-o:hover::after {
+    content: 'O';
+    color: var(--highlight-colour-secondary);
 }
 
 .top-left {
