@@ -134,17 +134,19 @@ const gameController = (() => {
   const playerO = playerFactory('Player O', 'O');
 
   let firstPlayer = playerX;
+  let currentPlayer = firstPlayer;
+
   const changeFirstPlayer = () => {
     if (firstPlayer === playerX) {
       firstPlayer = playerO;
     } else if (firstPlayer === playerO) {
       firstPlayer = playerX;
     }
+    currentPlayer = firstPlayer;
     console.log(`${firstPlayer.name}'s turn.`);
     return firstPlayer;
   };
 
-  let currentPlayer = firstPlayer;
   const changeCurrentPlayer = () => {
     if (currentPlayer === playerX) {
       currentPlayer = playerO;
@@ -212,6 +214,8 @@ const gameController = (() => {
 
 /* Module to control UI display */
 const displayController = (() => {
+  const clearScoreBtn = document.getElementById('clear-score');
+  const swapFirstPlayerBtn = document.getElementById('swap-players');
   const cells = document.querySelectorAll('.gameboard-cell');
   const cellsArray = Array.from(cells);
   cellsArray.forEach((cell) => {
@@ -261,6 +265,7 @@ const displayController = (() => {
         cell.dataset.row,
         cell.dataset.column
       );
+      swapFirstPlayerBtn.disabled = true;
       if (chosenOption === 'X' || chosenOption === 'O') {
         if (chosenOption === 'X') {
           cell.textContent = 'X';
@@ -335,6 +340,7 @@ const displayController = (() => {
     const playAgainBtn = document.getElementById('button-play-again');
     victoryStatusDiv.classList.add('hidden');
     playAgainBtn.removeEventListener('click', playNewRound);
+    swapFirstPlayerBtn.disabled = false;
   };
 
   const displayEndMessage = (result) => {
@@ -353,10 +359,30 @@ const displayController = (() => {
     playAgainBtn.addEventListener('click', playNewRound);
   };
 
-  const clearScoreBtn = document.getElementById('clear-score');
   const clearScoreDisplay = () => {
     gameController.clearScores();
     refreshScore();
   };
   clearScoreBtn.addEventListener('click', clearScoreDisplay);
+
+  const swapFirstPlayerDisplay = () => {
+    const playerXDiv = document.getElementById('scoreboard-player-x');
+    const playerXNameDiv = document.getElementById('scoreboard-player-x-name');
+    const playerODiv = document.getElementById('scoreboard-player-o');
+    const playerONameDiv = document.getElementById('scoreboard-player-o-name');
+    if (playerXDiv.classList.contains('order-2')) {
+      playerXDiv.classList.remove('order-2');
+      playerXNameDiv.classList.remove('order-2');
+      playerODiv.classList.add('order-2');
+      playerONameDiv.classList.add('order-2');
+    } else if (playerODiv.classList.contains('order-2')) {
+      playerODiv.classList.remove('order-2');
+      playerONameDiv.classList.remove('order-2');
+      playerXDiv.classList.add('order-2');
+      playerXNameDiv.classList.add('order-2');
+    }
+    gameController.changeFirstPlayer();
+    togglePlayerMark();
+  };
+  swapFirstPlayerBtn.addEventListener('click', swapFirstPlayerDisplay);
 })();

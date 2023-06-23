@@ -85,7 +85,7 @@ button, input {
 
 /* 2.2. Dropdown buttons, swap first player button, submit name buttons (icons) */
 
-.button-choose-name, .button-swap-players, .button-submit-name {
+.button-choose-name, .button-swap-players, .button-swap-players:disabled:hover, .button-submit-name {
     padding: 0;
     border: none;
     background: none;
