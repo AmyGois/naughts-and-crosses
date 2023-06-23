@@ -122,7 +122,10 @@ const playerFactory = (playerName, playerMark) => {
     score = 0;
     return score;
   };
-  return { name, mark, score, incrementScore, clearScore };
+
+  const getScore = () => score;
+
+  return { name, mark, incrementScore, clearScore, getScore };
 };
 
 /* Module to control the flow of the game */
@@ -154,8 +157,15 @@ const gameController = (() => {
 
   const getCurrentPlayerName = () => currentPlayer.name;
   const getCurrentPlayerMark = () => currentPlayer.mark;
-  const getPlayerXScore = () => playerX.score;
-  const getPlayerOScore = () => playerO.score;
+  const getPlayerXScore = () => playerX.getScore();
+  const getPlayerOScore = () => playerO.getScore();
+
+  const clearScores = () => {
+    playerX.clearScore();
+    console.log(playerX.getScore());
+    playerO.clearScore();
+    console.log(playerO.getScore());
+  };
 
   const resetBoard = () => {
     gameboard.clearBoard();
@@ -166,7 +176,7 @@ const gameController = (() => {
     const victory = gameboard.checkVictoryStatus(mark);
     if (victory === true) {
       console.log(`${mark} wins!`);
-      currentPlayer.score += 1;
+      currentPlayer.incrementScore();
       return 'win';
     }
     if (victory === 'tie') {
@@ -193,6 +203,7 @@ const gameController = (() => {
     changeCurrentPlayer,
     getPlayerXScore,
     getPlayerOScore,
+    clearScores,
     resetBoard,
     endOrContinueGame,
     takeTurn,
@@ -341,4 +352,11 @@ const displayController = (() => {
     }
     playAgainBtn.addEventListener('click', playNewRound);
   };
+
+  const clearScoreBtn = document.getElementById('clear-score');
+  const clearScoreDisplay = () => {
+    gameController.clearScores();
+    refreshScore();
+  };
+  clearScoreBtn.addEventListener('click', clearScoreDisplay);
 })();
