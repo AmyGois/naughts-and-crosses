@@ -85,7 +85,7 @@ const gameboard = ((rows, columns) => {
       return victory;
     });
     if (victory === false) {
-      let tie = false;
+      let tie = true;
       for (let i = 0; i < board.length; i++) {
         for (let j = 0; j < board[i].length; j++) {
           if (board[i][j] === '') {
@@ -94,6 +94,9 @@ const gameboard = ((rows, columns) => {
           } else {
             tie = true;
           }
+        }
+        if (tie === false) {
+          break;
         }
       }
       if (tie === true) {
@@ -145,10 +148,16 @@ const gameController = (() => {
     } else if (currentPlayer === playerO) {
       currentPlayer = playerX;
     }
+    console.log(`${currentPlayer.name}'s turn.`);
     return currentPlayer;
   };
 
-  const resetGame = () => {
+  const getCurrentPlayerName = () => currentPlayer.name;
+  const getCurrentPlayerMark = () => currentPlayer.mark;
+  const getPlayerXScore = () => playerX.score;
+  const getPlayerOScore = () => playerO.score;
+
+  const resetBoard = () => {
     gameboard.clearBoard();
     currentPlayer = firstPlayer;
   };
@@ -158,12 +167,10 @@ const gameController = (() => {
     if (victory === true) {
       console.log(`${mark} wins!`);
       currentPlayer.score += 1;
-      resetGame();
       return 'win';
     }
     if (victory === 'tie') {
       console.log(`It's a tie!`);
-      resetGame();
       return 'tie';
     }
     return 'continue';
@@ -175,14 +182,21 @@ const gameController = (() => {
       console.log('Try again!');
       return false; // false = there already is a mark in this cell
     }
-    const chosenMark = currentPlayer.mark;
-    changeCurrentPlayer();
-    console.log(`${currentPlayer.name}'s turn.`);
-    return chosenMark;
+    return currentPlayer.mark;
   };
 
   console.log(`${currentPlayer.name}'s turn.`);
-  return { changeFirstPlayer, resetGame, endOrContinueGame, takeTurn };
+  return {
+    changeFirstPlayer,
+    getCurrentPlayerName,
+    getCurrentPlayerMark,
+    changeCurrentPlayer,
+    getPlayerXScore,
+    getPlayerOScore,
+    resetBoard,
+    endOrContinueGame,
+    takeTurn,
+  };
 })();
 
 /* Module to control UI display */
@@ -222,8 +236,6 @@ const displayController = (() => {
       cell.dataset.column = 2;
     }
 
-    cell.classList.add('cell-x');
-
     const removeClass = () => {
       if (cell.classList.contains('cell-x')) {
         cell.classList.remove('cell-x');
@@ -234,22 +246,43 @@ const displayController = (() => {
     };
 
     const completeTurn = () => {
-      const result = gameController.takeTurn(
+      const chosenOption = gameController.takeTurn(
         cell.dataset.row,
         cell.dataset.column
       );
-      if (result === 'X') {
-        cell.textContent = 'X';
+      if (chosenOption === 'X' || chosenOption === 'O') {
+        if (chosenOption === 'X') {
+          cell.textContent = 'X';
+        }
+        if (chosenOption === 'O') {
+          cell.textContent = 'O';
+        }
+        removeClass();
+        const result = gameController.endOrContinueGame(chosenOption);
+        if (result === 'continue') {
+          gameController.changeCurrentPlayer();
+          togglePlayerMark();
+        } else if (result === 'win' || result === 'tie') {
+          disableBoard();
+          refreshScore();
+          displayEndMessage(result);
+        }
       }
-      if (result === 'O') {
-        cell.textContent = 'O';
-      }
-      removeClass();
-      togglePlayerMark();
     };
 
     cell.addEventListener('click', completeTurn);
   });
+
+  const addMarkClass = () => {
+    const currentPlayerMark = gameController.getCurrentPlayerMark();
+    if (currentPlayerMark === 'X') {
+      cellsArray.forEach((cell) => cell.classList.add('cell-x'));
+    }
+    if (currentPlayerMark === 'O') {
+      cellsArray.forEach((cell) => cell.classList.add('cell-o'));
+    }
+  };
+  addMarkClass();
 
   const togglePlayerMark = () => {
     cellsArray.forEach((cell) => {
@@ -259,5 +292,53 @@ const displayController = (() => {
         cell.classList.replace('cell-o', 'cell-x');
       }
     });
+  };
+
+  const disableBoard = () => {
+    cellsArray.forEach((cell) => {
+      cell.disabled = true;
+    });
+  };
+
+  const refreshScore = () => {
+    const xScore = gameController.getPlayerXScore();
+    const oScore = gameController.getPlayerOScore();
+    const xScoreDisplay = document.getElementById('score-x');
+    const oScoreDisplay = document.getElementById('score-o');
+    xScoreDisplay.textContent = `${xScore}`;
+    oScoreDisplay.textContent = `${oScore}`;
+  };
+  refreshScore();
+
+  const playNewRound = () => {
+    gameController.resetBoard();
+    cellsArray.forEach((cell) => {
+      cell.disabled = false;
+      cell.textContent = '';
+      cell.classList.remove('cell-x');
+      cell.classList.remove('cell-o');
+    });
+    addMarkClass();
+
+    const victoryStatusDiv = document.getElementById('victory-status');
+    const playAgainBtn = document.getElementById('button-play-again');
+    victoryStatusDiv.classList.add('hidden');
+    playAgainBtn.removeEventListener('click', playNewRound);
+  };
+
+  const displayEndMessage = (result) => {
+    const victoryStatusDiv = document.getElementById('victory-status');
+    const endMessage = document.getElementById('victory-status-message');
+    const playAgainBtn = document.getElementById('button-play-again');
+
+    victoryStatusDiv.classList.remove('hidden');
+    if (result === 'win') {
+      const winner = gameController.getCurrentPlayerName();
+      endMessage.textContent = `${winner} wins this round!`;
+    }
+    if (result === 'tie') {
+      endMessage.textContent = `It's a tie!`;
+    }
+    playAgainBtn.addEventListener('click', playNewRound);
   };
 })();

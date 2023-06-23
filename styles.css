@@ -312,6 +312,14 @@ main {
     color: var(--highlight-colour-secondary);
 }
 
+.gameboard-cell:disabled:hover {
+    background-color: var(--background-colour-secondary);
+}
+
+.gameboard-cell:disabled:hover::after {
+    content: '';
+}
+
 .top-left {
     border-top-left-radius: 16px;
 }

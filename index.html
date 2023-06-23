@@ -41,7 +41,7 @@
 
                 <div class="scoreboard-player-info">
                     <span class="player-mark">X</span>
-                    <span class="player-score">3</span>
+                    <span class="player-score" id="score-x"></span>
                 </div>
             </div>
     
@@ -71,7 +71,7 @@
 
                 <div class="scoreboard-player-info">
                     <span class="player-mark">O</span>
-                    <span class="player-score">2</span>
+                    <span class="player-score" id="score-o"></span>
                 </div>
             </div>
     
@@ -86,9 +86,9 @@
     </header>
     
     <main>
-        <div class="victory-status hidden">
-            <p class="victory-status-message">It's a tie!</p>
-            <button class="button-play-again">Play Again</button>
+        <div class="victory-status hidden" id="victory-status">
+            <p class="victory-status-message" id="victory-status-message">It's a tie!</p>
+            <button class="button-play-again" id="button-play-again">Play Again</button>
         </div>
 
         <div class="gameboard">
