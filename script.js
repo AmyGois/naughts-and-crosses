@@ -111,7 +111,7 @@ const gameboard = ((rows, columns) => {
 
 /* Factory function to create players */
 const playerFactory = (playerName, playerMark) => {
-  const name = playerName;
+  let name = playerName;
   const mark = playerMark;
   let score = 0;
   const incrementScore = () => {
@@ -125,7 +125,21 @@ const playerFactory = (playerName, playerMark) => {
 
   const getScore = () => score;
 
-  return { name, mark, incrementScore, clearScore, getScore };
+  const getName = () => name;
+
+  const changeName = (newName) => {
+    name = newName;
+    return name;
+  };
+
+  return {
+    mark,
+    incrementScore,
+    clearScore,
+    getScore,
+    getName,
+    changeName,
+  };
 };
 
 /* Module to control the flow of the game */
@@ -143,7 +157,7 @@ const gameController = (() => {
       firstPlayer = playerX;
     }
     currentPlayer = firstPlayer;
-    console.log(`${firstPlayer.name}'s turn.`);
+    console.log(`${firstPlayer.getName()}'s turn.`);
     return firstPlayer;
   };
 
@@ -153,14 +167,18 @@ const gameController = (() => {
     } else if (currentPlayer === playerO) {
       currentPlayer = playerX;
     }
-    console.log(`${currentPlayer.name}'s turn.`);
+    console.log(`${currentPlayer.getName()}'s turn.`);
     return currentPlayer;
   };
 
-  const getCurrentPlayerName = () => currentPlayer.name;
+  const getCurrentPlayerName = () => currentPlayer.getName();
   const getCurrentPlayerMark = () => currentPlayer.mark;
   const getPlayerXScore = () => playerX.getScore();
   const getPlayerOScore = () => playerO.getScore();
+  const changePlayerXName = (newName) => playerX.changeName(newName);
+  const changePlayerOName = (newName) => playerO.changeName(newName);
+  const getPlayerXName = () => playerX.getName();
+  const getPlayerOName = () => playerO.getName();
 
   const clearScores = () => {
     playerX.clearScore();
@@ -197,7 +215,7 @@ const gameController = (() => {
     return currentPlayer.mark;
   };
 
-  console.log(`${currentPlayer.name}'s turn.`);
+  console.log(`${currentPlayer.getName()}'s turn.`);
   return {
     changeFirstPlayer,
     getCurrentPlayerName,
@@ -205,6 +223,10 @@ const gameController = (() => {
     changeCurrentPlayer,
     getPlayerXScore,
     getPlayerOScore,
+    changePlayerXName,
+    changePlayerOName,
+    getPlayerXName,
+    getPlayerOName,
     clearScores,
     resetBoard,
     endOrContinueGame,
@@ -216,8 +238,19 @@ const gameController = (() => {
 const displayController = (() => {
   const clearScoreBtn = document.getElementById('clear-score');
   const swapFirstPlayerBtn = document.getElementById('swap-players');
+  const choosePlayerXBtn = document.getElementById('button-choose-player-x');
+  const choosePlayerOBtn = document.getElementById('button-choose-player-o');
+  const choosePlayerXForm = document.getElementById('form-choose-player-x');
+  const choosePlayerOForm = document.getElementById('form-choose-player-o');
+  const chooseNameXInput = document.getElementById('choose-name-x');
+  const chooseNameOInput = document.getElementById('choose-name-o');
+  const submitNameXBtn = document.getElementById('button-submit-name-x');
+  const submitNameOBtn = document.getElementById('button-submit-name-o');
+  const nameDisplayX = document.getElementById('name-player-x');
+  const nameDisplayO = document.getElementById('name-player-o');
   const cells = document.querySelectorAll('.gameboard-cell');
   const cellsArray = Array.from(cells);
+
   cellsArray.forEach((cell) => {
     if (cellsArray.indexOf(cell) < 3) {
       cell.dataset.row = 0;
@@ -385,4 +418,46 @@ const displayController = (() => {
     togglePlayerMark();
   };
   swapFirstPlayerBtn.addEventListener('click', swapFirstPlayerDisplay);
+
+  const toggleChangeNameForm = (form) => {
+    const formToOpen = form;
+    if (formToOpen.classList.contains('visible')) {
+      formToOpen.classList.remove('visible');
+    } else if (!formToOpen.classList.contains('visible')) {
+      formToOpen.classList.add('visible');
+    }
+  };
+  choosePlayerXBtn.addEventListener('click', () =>
+    toggleChangeNameForm(choosePlayerXForm)
+  );
+  choosePlayerOBtn.addEventListener('click', () =>
+    toggleChangeNameForm(choosePlayerOForm)
+  );
+
+  const changeNameDisplay = (e, newName, mark) => {
+    e.preventDefault();
+    if (mark === 'X') {
+      if (newName === '' || newName === ' ') {
+        gameController.changePlayerXName('PLayer X');
+      } else {
+        gameController.changePlayerXName(newName);
+      }
+      nameDisplayX.textContent = gameController.getPlayerXName();
+      toggleChangeNameForm(choosePlayerXForm);
+    } else if (mark === 'O') {
+      if (newName === '' || newName === ' ') {
+        gameController.changePlayerOName('PLayer O');
+      } else {
+        gameController.changePlayerOName(newName);
+      }
+      nameDisplayO.textContent = gameController.getPlayerOName();
+      toggleChangeNameForm(choosePlayerOForm);
+    }
+  };
+  submitNameXBtn.addEventListener('click', (e) => {
+    changeNameDisplay(e, chooseNameXInput.value, 'X');
+  });
+  submitNameOBtn.addEventListener('click', (e) => {
+    changeNameDisplay(e, chooseNameOInput.value, 'O');
+  });
 })();
