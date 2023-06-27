@@ -234,6 +234,14 @@ const gameController = (() => {
   };
 })();
 
+/* AI to make the computer play the game */
+const playerBot = (() => {
+  const chooseRandom = () => Math.floor(Math.random() * 3);
+  const takeTurn = () =>
+    gameController.takeTurn(chooseRandom(), chooseRandom());
+  return { chooseRandom, takeTurn };
+})();
+
 /* Module to control UI display */
 const displayController = (() => {
   const clearScoreBtn = document.getElementById('clear-score');
@@ -248,8 +256,56 @@ const displayController = (() => {
   const submitNameOBtn = document.getElementById('button-submit-name-o');
   const nameDisplayX = document.getElementById('name-player-x');
   const nameDisplayO = document.getElementById('name-player-o');
+  const humanRadioX = document.getElementById('player-human-x');
+  const botRadioX = document.getElementById('player-bot-x');
+  const humanRadioO = document.getElementById('player-human-o');
+  const botRadioO = document.getElementById('player-bot-o');
+  const victoryStatusDiv = document.getElementById('victory-status');
+  const endMessage = document.getElementById('victory-status-message');
+  const playAgainBtn = document.getElementById('button-play-again');
   const cells = document.querySelectorAll('.gameboard-cell');
   const cellsArray = Array.from(cells);
+
+  const removeClass = (cell) => {
+    if (cell.classList.contains('cell-x')) {
+      cell.classList.remove('cell-x');
+    }
+    if (cell.classList.contains('cell-o')) {
+      cell.classList.remove('cell-o');
+    }
+  };
+
+  const completeTurn = (cell) => {
+    const chosenOption = gameController.takeTurn(
+      cell.dataset.row,
+      cell.dataset.column
+    );
+    if (chosenOption === false) {
+      return false;
+    }
+    swapFirstPlayerBtn.disabled = true;
+    if (chosenOption === 'X' || chosenOption === 'O') {
+      if (chosenOption === 'X') {
+        cell.textContent = 'X';
+      }
+      if (chosenOption === 'O') {
+        cell.textContent = 'O';
+      }
+      removeClass(cell);
+      const result = gameController.endOrContinueGame(chosenOption);
+      if (result === 'continue') {
+        gameController.changeCurrentPlayer();
+        togglePlayerMark();
+        if (gameController.getCurrentPlayerName() === 'CrossBot') {
+          botTakeTurnDisplay();
+        }
+      } else if (result === 'win' || result === 'tie') {
+        disableBoard();
+        refreshScore();
+        displayEndMessage(result);
+      }
+    }
+  };
 
   cellsArray.forEach((cell) => {
     if (cellsArray.indexOf(cell) < 3) {
@@ -284,42 +340,7 @@ const displayController = (() => {
       cell.dataset.column = 2;
     }
 
-    const removeClass = () => {
-      if (cell.classList.contains('cell-x')) {
-        cell.classList.remove('cell-x');
-      }
-      if (cell.classList.contains('cell-o')) {
-        cell.classList.remove('cell-o');
-      }
-    };
-
-    const completeTurn = () => {
-      const chosenOption = gameController.takeTurn(
-        cell.dataset.row,
-        cell.dataset.column
-      );
-      swapFirstPlayerBtn.disabled = true;
-      if (chosenOption === 'X' || chosenOption === 'O') {
-        if (chosenOption === 'X') {
-          cell.textContent = 'X';
-        }
-        if (chosenOption === 'O') {
-          cell.textContent = 'O';
-        }
-        removeClass();
-        const result = gameController.endOrContinueGame(chosenOption);
-        if (result === 'continue') {
-          gameController.changeCurrentPlayer();
-          togglePlayerMark();
-        } else if (result === 'win' || result === 'tie') {
-          disableBoard();
-          refreshScore();
-          displayEndMessage(result);
-        }
-      }
-    };
-
-    cell.addEventListener('click', completeTurn);
+    cell.addEventListener('click', () => completeTurn(cell));
   });
 
   const addMarkClass = () => {
@@ -359,7 +380,7 @@ const displayController = (() => {
   };
   refreshScore();
 
-  const playNewRound = () => {
+  const resetBoardDisplay = () => {
     gameController.resetBoard();
     cellsArray.forEach((cell) => {
       cell.disabled = false;
@@ -368,19 +389,17 @@ const displayController = (() => {
       cell.classList.remove('cell-o');
     });
     addMarkClass();
+  };
 
-    const victoryStatusDiv = document.getElementById('victory-status');
-    const playAgainBtn = document.getElementById('button-play-again');
+  const playNewRound = () => {
+    resetBoardDisplay();
+    isFirstPlayerBot();
     victoryStatusDiv.classList.add('hidden');
     playAgainBtn.removeEventListener('click', playNewRound);
     swapFirstPlayerBtn.disabled = false;
   };
 
   const displayEndMessage = (result) => {
-    const victoryStatusDiv = document.getElementById('victory-status');
-    const endMessage = document.getElementById('victory-status-message');
-    const playAgainBtn = document.getElementById('button-play-again');
-
     victoryStatusDiv.classList.remove('hidden');
     if (result === 'win') {
       const winner = gameController.getCurrentPlayerName();
@@ -416,6 +435,13 @@ const displayController = (() => {
     }
     gameController.changeFirstPlayer();
     togglePlayerMark();
+    resetBoardDisplay();
+    if (
+      gameController.getCurrentPlayerName() === 'CrossBot' ||
+      gameController.getCurrentPlayerName() === 'NaughtyBot'
+    ) {
+      botTakeTurnDisplay();
+    }
   };
   swapFirstPlayerBtn.addEventListener('click', swapFirstPlayerDisplay);
 
@@ -460,4 +486,47 @@ const displayController = (() => {
   submitNameOBtn.addEventListener('click', (e) => {
     changeNameDisplay(e, chooseNameOInput.value, 'O');
   });
+
+  const botTakeTurnDisplay = () => {
+    const randomRow = playerBot.chooseRandom();
+    const randomColumn = playerBot.chooseRandom();
+    console.log(randomRow);
+    console.log(randomColumn);
+    cellsArray.forEach((cell) => {
+      if (
+        cell.dataset.row === randomRow.toString() &&
+        cell.dataset.column === randomColumn.toString()
+      ) {
+        const result = completeTurn(cell);
+        if (result === false) {
+          botTakeTurnDisplay();
+        }
+      }
+    });
+  };
+
+  const isFirstPlayerBot = () => {
+    const firstPlayer = gameController.getCurrentPlayerName();
+    if (firstPlayer === 'CrossBot' || firstPlayer === 'NaughtyBot') {
+      botTakeTurnDisplay();
+    }
+  };
+
+  const playAsBot = (e, otherBot, botName, mark) => {
+    otherBot.disabled = true;
+    changeNameDisplay(e, botName, mark);
+    isFirstPlayerBot();
+  };
+
+  const playAsHuman = (e, otherBot, botName, mark) => {
+    otherBot.disabled = false;
+    changeNameDisplay(e, botName, mark);
+  };
+
+  humanRadioX.addEventListener('change', (e) =>
+    playAsHuman(e, botRadioO, 'Player X', 'X')
+  );
+  botRadioX.addEventListener('change', (e) =>
+    playAsBot(e, botRadioO, 'CrossBot', 'X')
+  );
 })();
