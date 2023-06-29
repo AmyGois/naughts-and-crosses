@@ -1,14 +1,14 @@
 /* Contents:
     1. Page layout, main colours & typography
     2. Buttons
-        2.1. "Clear score" & "Play again" buttons
-        2.2. Dropdown buttons and swap first player button (icons)
+        "Clear score" & "Play again" buttons
+        Dropdown buttons and swap first player button (icons)
     3. Header
-        3.1. Scoreboard
-        3.2. Options to change the player's name or choose a bot
+        Scoreboard
+        Options to change the player's name or choose a bot
     4. Main section
-        4.1. Victory or tie message
-        4.2. Gameboard
+        Victory or tie message
+        Gameboard
     5. Footer */
 
 /* *********************************
@@ -26,7 +26,6 @@
     --highlight-colour-main: #680085;
     --highlight-colour-secondary: #00a2c2;
     --highlight-hover-secondary: #00829c;
-    --highlight-colour-third: #3a0085;
     --text-colour-dark: #030303;
     --text-colour-light: #fdfdfd;
 }
@@ -52,11 +51,6 @@ header, footer {
     color: var(--text-colour-light);
 }
 
-/* footer {
-    background-color: var(--highlight-colour-third);
-    color: var(--text-colour-light);
-} */
-
 button, input {
     font-family: 'Poppins', sans-serif;
 }
@@ -65,7 +59,7 @@ button, input {
 2. Buttons
 ********************************* */
 
-/* 2.1. "Clear score" & "Play again" buttons */
+/* "Clear score" & "Play again" buttons */
 
 .button-clear-score, .button-play-again {
     background-color: var(--highlight-colour-secondary);
@@ -83,7 +77,7 @@ button, input {
     font-size: 1rem;
 }
 
-/* 2.2. Dropdown buttons, swap first player button, submit name buttons (icons) */
+/* Dropdown buttons, swap first player button, submit name buttons (icons) */
 
 .button-choose-name, .button-swap-players, .button-swap-players:disabled:hover, .button-submit-name {
     padding: 0;
@@ -163,7 +157,7 @@ h1 {
     font-size: 2.2rem;
 }
 
-/* 3.1. Scoreboard */
+/* Scoreboard */
 
 .scoreboard {
     display: flex;
@@ -206,7 +200,7 @@ h1 {
     order: 2;
 }
 
-/* 3.2. Options to change the player's name or choose a bot */
+/* Options to change the player's name or choose a bot */
 
 .scoreboard-player-name {
     position: relative;
@@ -265,7 +259,7 @@ main {
     gap: 16px;
 }
 
-/* 4.1. Victory or tie message */
+/* Victory or tie message */
 
 .hidden {
     visibility: hidden;
@@ -276,7 +270,7 @@ main {
     font-size: 1.2rem;
 }
 
-/* 4.2. Gameboard */
+/* Gameboard */
 
 .gameboard {
     display: grid;

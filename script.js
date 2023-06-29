@@ -1,5 +1,29 @@
-/* Module to control the gameboard */
+/* Contents:
+  1. Module to control the gameboard
+      Create array to hold the values on the board
+      Add and remove values to the board array
+      Evaluate if the game has ended (with a victory or a tie) or should continue
+  2. Factory function to create players
+  3. Module to control the flow of the game
+      Functions to make and organise the players
+      Make a move, end the game, clear the board and clear the players' scores
+  4. AI module to make the computer play the game
+      Clone current state of the gameboard on to a test board
+      Check for victory and end of game
+      Choose the best possible move to win or tie the game
+  5. Module to control UI display
+      DOM elements to manipulate
+      Functions to control the gameboard display
+      Functions to control the end-of-game message display
+      Functions to control the scoreboard display
+      Functions to control the forms to pick a name or choose to play against AI
+*/
+
+/* *******************************************************
+1. Module to control the gameboard
+******************************************************* */
 const gameboard = ((rows, columns) => {
+  /* Create array to hold the values on the board */
   const board = [];
   for (let i = 0; i < rows; i++) {
     const row = [];
@@ -12,6 +36,7 @@ const gameboard = ((rows, columns) => {
 
   const getBoard = () => board;
 
+  /* Add and remove values to the board array */
   const clearBoard = () => {
     for (let i = 0; i < board.length; i++) {
       for (let j = 0; j < board[i].length; j++) {
@@ -24,12 +49,12 @@ const gameboard = ((rows, columns) => {
   const addMark = (playerMark, row, column) => {
     if (board[row][column] === '') {
       board[row][column] = playerMark;
-      console.log(board);
       return board;
     }
     return false;
   };
 
+  /* Evaluate if the game has ended (with a victory or a tie) or should continue */
   const checkVictoryStatus = (playerMark) => {
     let victory = false;
     for (let i = 0; i < board.length; i++) {
@@ -107,11 +132,13 @@ const gameboard = ((rows, columns) => {
     }
     return victory;
   };
-  console.log(board);
+
   return { addMark, getBoard, clearBoard, checkVictoryStatus };
 })(3, 3);
 
-/* Factory function to create players */
+/* *******************************************************
+2. Factory function to create players
+******************************************************* */
 const playerFactory = (playerName, playerMark) => {
   let name = playerName;
   const mark = playerMark;
@@ -144,10 +171,20 @@ const playerFactory = (playerName, playerMark) => {
   };
 };
 
-/* Module to control the flow of the game */
+/* *******************************************************
+3. Module to control the flow of the game
+******************************************************* */
 const gameController = (() => {
+  /* Functions to make and organise the players */
   const playerX = playerFactory('Player X', 'X');
   const playerO = playerFactory('Player O', 'O');
+
+  const getPlayerXScore = () => playerX.getScore();
+  const getPlayerOScore = () => playerO.getScore();
+  const changePlayerXName = (newName) => playerX.changeName(newName);
+  const changePlayerOName = (newName) => playerO.changeName(newName);
+  const getPlayerXName = () => playerX.getName();
+  const getPlayerOName = () => playerO.getName();
 
   let firstPlayer = playerX;
   let currentPlayer = firstPlayer;
@@ -159,7 +196,6 @@ const gameController = (() => {
       firstPlayer = playerX;
     }
     currentPlayer = firstPlayer;
-    console.log(`${firstPlayer.getName()}'s turn.`);
     return firstPlayer;
   };
 
@@ -169,24 +205,16 @@ const gameController = (() => {
     } else if (currentPlayer === playerO) {
       currentPlayer = playerX;
     }
-    console.log(`${currentPlayer.getName()}'s turn.`);
     return currentPlayer;
   };
 
   const getCurrentPlayerName = () => currentPlayer.getName();
   const getCurrentPlayerMark = () => currentPlayer.mark;
-  const getPlayerXScore = () => playerX.getScore();
-  const getPlayerOScore = () => playerO.getScore();
-  const changePlayerXName = (newName) => playerX.changeName(newName);
-  const changePlayerOName = (newName) => playerO.changeName(newName);
-  const getPlayerXName = () => playerX.getName();
-  const getPlayerOName = () => playerO.getName();
 
+  /* Make a move, end the game, clear the board and clear the players' scores */
   const clearScores = () => {
     playerX.clearScore();
-    console.log(playerX.getScore());
     playerO.clearScore();
-    console.log(playerO.getScore());
   };
 
   const resetBoard = () => {
@@ -197,12 +225,10 @@ const gameController = (() => {
   const endOrContinueGame = (mark) => {
     const victory = gameboard.checkVictoryStatus(mark);
     if (victory === true) {
-      console.log(`${mark} wins!`);
       currentPlayer.incrementScore();
       return 'win';
     }
     if (victory === 'tie') {
-      console.log(`It's a tie!`);
       return 'tie';
     }
     return 'continue';
@@ -211,13 +237,11 @@ const gameController = (() => {
   const takeTurn = (row, column) => {
     const chosenMove = gameboard.addMark(currentPlayer.mark, row, column);
     if (chosenMove === false) {
-      console.log('Try again!');
       return false; // false = there already is a mark in this cell
     }
     return currentPlayer.mark;
   };
 
-  console.log(`${currentPlayer.getName()}'s turn.`);
   return {
     changeFirstPlayer,
     getCurrentPlayerName,
@@ -236,12 +260,10 @@ const gameController = (() => {
   };
 })();
 
-/* AI to make the computer play the game */
+/* *******************************************************
+4. AI module to make the computer play the game
+******************************************************* */
 const playerBot = (() => {
-  /* const chooseRandom = () => Math.floor(Math.random() * 3);
-  const takeTurn = () =>
-    gameController.takeTurn(chooseRandom(), chooseRandom()); */
-
   /* Clone current state of the gameboard on to a test board */
   const currentBoard = gameboard.getBoard();
   const testBoard = [];
@@ -294,6 +316,7 @@ const playerBot = (() => {
     }
     return false;
   };
+
   const checkEndOfGame = () => {
     let ended = true;
     for (let i = 0; i < testBoard.length; i++) {
@@ -312,6 +335,7 @@ const playerBot = (() => {
     return ended; // true = no more moves possible
   };
 
+  /* Choose the best possible move to win or tie the game */
   let botMark = '';
   let opponent = '';
 
@@ -342,7 +366,7 @@ const playerBot = (() => {
     }
 
     if (isBot === true) {
-      let bestScore = 100; // Best possible score choosing this cell will produce
+      let bestScore = 100; // Best possible score choosing this cell will produce for the player bot
       for (let i = 0; i < testBoard.length; i++) {
         for (let j = 0; j < testBoard[i].length; j++) {
           if (testBoard[i][j] === '') {
@@ -356,7 +380,7 @@ const playerBot = (() => {
       return bestScore;
     }
     if (isBot === false) {
-      let bestScore = -100; // Best possible score choosing this cell will produce
+      let bestScore = -100; // Best possible score choosing this cell will produce for the opponent
       for (let i = 0; i < testBoard.length; i++) {
         for (let j = 0; j < testBoard[i].length; j++) {
           if (testBoard[i][j] === '') {
@@ -385,7 +409,6 @@ const playerBot = (() => {
           testBoard[i][j] = botMark;
           const score = minimax(botMark, 0, true);
           testBoard[i][j] = '';
-          console.log(`${i}, ${j}: ${score}`);
           if (score > bestScore) {
             bestScore = score;
             bestRow = i;
@@ -405,8 +428,11 @@ const playerBot = (() => {
   };
 })();
 
-/* Module to control UI display */
+/* *******************************************************
+5. Module to control UI display
+******************************************************* */
 const displayController = (() => {
+  /* DOM elements to manipulate */
   const clearScoreBtn = document.getElementById('clear-score');
   const swapFirstPlayerBtn = document.getElementById('swap-players');
   const choosePlayerXBtn = document.getElementById('button-choose-player-x');
@@ -427,6 +453,8 @@ const displayController = (() => {
   const endMessage = document.getElementById('victory-status-message');
   const playAgainBtn = document.getElementById('button-play-again');
   const cells = document.querySelectorAll('.gameboard-cell');
+
+  /* Functions to control the gameboard display */
   const cellsArray = Array.from(cells);
 
   const removeClass = (cell) => {
@@ -536,16 +564,6 @@ const displayController = (() => {
     });
   };
 
-  const refreshScore = () => {
-    const xScore = gameController.getPlayerXScore();
-    const oScore = gameController.getPlayerOScore();
-    const xScoreDisplay = document.getElementById('score-x');
-    const oScoreDisplay = document.getElementById('score-o');
-    xScoreDisplay.textContent = `${xScore}`;
-    oScoreDisplay.textContent = `${oScore}`;
-  };
-  refreshScore();
-
   const resetBoardDisplay = () => {
     gameController.resetBoard();
     cellsArray.forEach((cell) => {
@@ -557,6 +575,7 @@ const displayController = (() => {
     addMarkClass();
   };
 
+  /* Functions to control the end-of-game message display */
   const playNewRound = () => {
     resetBoardDisplay();
     isFirstPlayerBot();
@@ -576,6 +595,17 @@ const displayController = (() => {
     }
     playAgainBtn.addEventListener('click', playNewRound);
   };
+
+  /* Functions to control the scoreboard display */
+  const refreshScore = () => {
+    const xScore = gameController.getPlayerXScore();
+    const oScore = gameController.getPlayerOScore();
+    const xScoreDisplay = document.getElementById('score-x');
+    const oScoreDisplay = document.getElementById('score-o');
+    xScoreDisplay.textContent = `${xScore}`;
+    oScoreDisplay.textContent = `${oScore}`;
+  };
+  refreshScore();
 
   const clearScoreDisplay = () => {
     gameController.clearScores();
@@ -611,6 +641,7 @@ const displayController = (() => {
   };
   swapFirstPlayerBtn.addEventListener('click', swapFirstPlayerDisplay);
 
+  /* Functions to control the forms to pick a name or choose to play against AI */
   const toggleChangeNameForm = (form) => {
     const formToOpen = form;
     if (formToOpen.classList.contains('visible')) {
@@ -654,10 +685,6 @@ const displayController = (() => {
   });
 
   const botTakeTurnDisplay = () => {
-    /* const randomRow = playerBot.chooseRandom();
-    const randomColumn = playerBot.chooseRandom();
-    console.log(randomRow);
-    console.log(randomColumn); */
     playerBot.updateTestBoard();
     playerBot.findBestChoice();
     const chosenRow = playerBot.getBestRow();
