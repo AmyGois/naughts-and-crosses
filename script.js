@@ -325,16 +325,14 @@ const playerBot = (() => {
     }
   };
 
-  const getBotMark = () => botMark;
-
   const minimax = (mark, depth, isBot) => {
     const victory = checkVictory(mark);
 
     if (victory === true && isBot === true) {
-      return 10 - depth;
+      return 20 - depth;
     }
     if (victory === true && isBot === false) {
-      return -10 + depth;
+      return -20 + depth;
     }
     if (victory === false) {
       const tie = checkEndOfGame();
@@ -387,6 +385,7 @@ const playerBot = (() => {
           testBoard[i][j] = botMark;
           const score = minimax(botMark, 0, true);
           testBoard[i][j] = '';
+          console.log(`${i}, ${j}: ${score}`);
           if (score > bestScore) {
             bestScore = score;
             bestRow = i;
@@ -400,7 +399,6 @@ const playerBot = (() => {
   return {
     updateTestBoard,
     setBotMark,
-    getBotMark,
     getBestRow,
     getBestColumn,
     findBestChoice,
@@ -656,14 +654,18 @@ const displayController = (() => {
   });
 
   const botTakeTurnDisplay = () => {
-    const randomRow = playerBot.chooseRandom();
+    /* const randomRow = playerBot.chooseRandom();
     const randomColumn = playerBot.chooseRandom();
     console.log(randomRow);
-    console.log(randomColumn);
+    console.log(randomColumn); */
+    playerBot.updateTestBoard();
+    playerBot.findBestChoice();
+    const chosenRow = playerBot.getBestRow();
+    const chosenColumn = playerBot.getBestColumn();
     cellsArray.forEach((cell) => {
       if (
-        cell.dataset.row === randomRow.toString() &&
-        cell.dataset.column === randomColumn.toString()
+        cell.dataset.row === chosenRow.toString() &&
+        cell.dataset.column === chosenColumn.toString()
       ) {
         const result = completeTurn(cell);
         if (result === false) {
@@ -683,12 +685,13 @@ const displayController = (() => {
   const playAsBot = (e, otherBot, botName, mark) => {
     otherBot.disabled = true;
     changeNameDisplay(e, botName, mark);
+    playerBot.setBotMark(mark);
     isFirstPlayerBot();
   };
 
-  const playAsHuman = (e, otherBot, botName, mark) => {
+  const playAsHuman = (e, otherBot, humanName, mark) => {
     otherBot.disabled = false;
-    changeNameDisplay(e, botName, mark);
+    changeNameDisplay(e, humanName, mark);
   };
 
   humanRadioX.addEventListener('change', (e) =>
