@@ -10,6 +10,8 @@ const gameboard = ((rows, columns) => {
     board.push(row);
   }
 
+  const getBoard = () => board;
+
   const clearBoard = () => {
     for (let i = 0; i < board.length; i++) {
       for (let j = 0; j < board[i].length; j++) {
@@ -106,7 +108,7 @@ const gameboard = ((rows, columns) => {
     return victory;
   };
   console.log(board);
-  return { addMark, clearBoard, checkVictoryStatus };
+  return { addMark, getBoard, clearBoard, checkVictoryStatus };
 })(3, 3);
 
 /* Factory function to create players */
@@ -236,10 +238,173 @@ const gameController = (() => {
 
 /* AI to make the computer play the game */
 const playerBot = (() => {
-  const chooseRandom = () => Math.floor(Math.random() * 3);
+  /* const chooseRandom = () => Math.floor(Math.random() * 3);
   const takeTurn = () =>
-    gameController.takeTurn(chooseRandom(), chooseRandom());
-  return { chooseRandom, takeTurn };
+    gameController.takeTurn(chooseRandom(), chooseRandom()); */
+
+  /* Clone current state of the gameboard on to a test board */
+  const currentBoard = gameboard.getBoard();
+  const testBoard = [];
+  for (let i = 0; i < 3; i++) {
+    const row = [];
+    for (let j = 0; j < 3; j++) {
+      const cell = '';
+      row.push(cell);
+    }
+    testBoard.push(row);
+  }
+  const updateTestBoard = () => {
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        testBoard[i][j] = currentBoard[i][j].toString();
+      }
+    }
+    return testBoard;
+  };
+
+  /* Check for victory and end of game */
+  const checkVictory = (mark) => {
+    if (
+      (testBoard[0][0] === mark &&
+        testBoard[0][1] === mark &&
+        testBoard[0][2] === mark) ||
+      (testBoard[1][0] === mark &&
+        testBoard[1][1] === mark &&
+        testBoard[1][2] === mark) ||
+      (testBoard[2][0] === mark &&
+        testBoard[2][1] === mark &&
+        testBoard[2][2] === mark) ||
+      (testBoard[0][0] === mark &&
+        testBoard[1][0] === mark &&
+        testBoard[2][0] === mark) ||
+      (testBoard[0][1] === mark &&
+        testBoard[1][1] === mark &&
+        testBoard[2][1] === mark) ||
+      (testBoard[0][2] === mark &&
+        testBoard[1][2] === mark &&
+        testBoard[2][2] === mark) ||
+      (testBoard[0][0] === mark &&
+        testBoard[1][1] === mark &&
+        testBoard[2][2] === mark) ||
+      (testBoard[0][2] === mark &&
+        testBoard[1][1] === mark &&
+        testBoard[2][0] === mark)
+    ) {
+      return true; // Game has been won
+    }
+    return false;
+  };
+  const checkEndOfGame = () => {
+    let ended = true;
+    for (let i = 0; i < testBoard.length; i++) {
+      for (let j = 0; j < testBoard[i].length; j++) {
+        if (testBoard[i][j] === '') {
+          ended = false;
+          break;
+        } else {
+          ended = true;
+        }
+      }
+      if (ended === false) {
+        break;
+      }
+    }
+    return ended; // true = no more moves possible
+  };
+
+  let botMark = '';
+  let opponent = '';
+
+  const setBotMark = (mark) => {
+    if (mark === 'X') {
+      botMark = 'X';
+      opponent = 'O';
+    } else if (mark === 'O') {
+      botMark = 'O';
+      opponent = 'X';
+    }
+  };
+
+  const getBotMark = () => botMark;
+
+  const minimax = (mark, depth, isBot) => {
+    const victory = checkVictory(mark);
+
+    if (victory === true && isBot === true) {
+      return 10 - depth;
+    }
+    if (victory === true && isBot === false) {
+      return -10 + depth;
+    }
+    if (victory === false) {
+      const tie = checkEndOfGame();
+      if (tie === true) {
+        return 0;
+      }
+    }
+
+    if (isBot === true) {
+      let bestScore = 100; // Best possible score choosing this cell will produce
+      for (let i = 0; i < testBoard.length; i++) {
+        for (let j = 0; j < testBoard[i].length; j++) {
+          if (testBoard[i][j] === '') {
+            testBoard[i][j] = opponent;
+            const result = minimax(opponent, depth++, false);
+            bestScore = Math.min(bestScore, result);
+            testBoard[i][j] = '';
+          }
+        }
+      }
+      return bestScore;
+    }
+    if (isBot === false) {
+      let bestScore = -100; // Best possible score choosing this cell will produce
+      for (let i = 0; i < testBoard.length; i++) {
+        for (let j = 0; j < testBoard[i].length; j++) {
+          if (testBoard[i][j] === '') {
+            testBoard[i][j] = botMark;
+            const result = minimax(botMark, depth++, true);
+            bestScore = Math.max(bestScore, result);
+            testBoard[i][j] = '';
+          }
+        }
+      }
+      return bestScore;
+    }
+  };
+
+  let bestRow = '';
+  let bestColumn = '';
+
+  const getBestRow = () => bestRow;
+  const getBestColumn = () => bestColumn;
+
+  const findBestChoice = () => {
+    let bestScore = -100;
+    for (let i = 0; i < testBoard.length; i++) {
+      for (let j = 0; j < testBoard[i].length; j++) {
+        if (testBoard[i][j] === '') {
+          testBoard[i][j] = botMark;
+          const score = minimax(botMark, 0, true);
+          testBoard[i][j] = '';
+          if (score > bestScore) {
+            bestScore = score;
+            bestRow = i;
+            bestColumn = j;
+          }
+        }
+      }
+    }
+  };
+
+  return {
+    updateTestBoard,
+    setBotMark,
+    getBotMark,
+    getBestRow,
+    getBestColumn,
+    findBestChoice,
+  };
 })();
 
 /* Module to control UI display */
@@ -296,7 +461,10 @@ const displayController = (() => {
       if (result === 'continue') {
         gameController.changeCurrentPlayer();
         togglePlayerMark();
-        if (gameController.getCurrentPlayerName() === 'CrossBot') {
+        if (
+          gameController.getCurrentPlayerName() === 'CrossBot' ||
+          gameController.getCurrentPlayerName() === 'NaughtyBot'
+        ) {
           botTakeTurnDisplay();
         }
       } else if (result === 'win' || result === 'tie') {
@@ -528,5 +696,11 @@ const displayController = (() => {
   );
   botRadioX.addEventListener('change', (e) =>
     playAsBot(e, botRadioO, 'CrossBot', 'X')
+  );
+  humanRadioO.addEventListener('change', (e) =>
+    playAsHuman(e, botRadioX, 'Player O', 'O')
+  );
+  botRadioO.addEventListener('change', (e) =>
+    playAsBot(e, botRadioX, 'NaughtyBot', 'O')
   );
 })();
